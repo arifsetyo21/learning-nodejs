@@ -1,5 +1,6 @@
 const fs = require('fs')
 const http = require('http')
+const url = require('url')
 
 ///////////////// NOTE FILE
 
@@ -28,10 +29,24 @@ console.log('File Written!') */
 console.log('will read file!');
 */
 
-////////////////// NOTE SERVER
+////////////////// NOTE SERVER and URL(Routings)
 const server = http.createServer((req, res) => {
-   console.log(req);
-   res.end('Hello from the server!')
+   const pathName = req.url
+   console.log(req.url);
+
+   /* NOTE Native routing with if clause */
+   if (pathName === '/' || pathName === '/overview') {
+      res.end('this is a overview page')
+   } else if ( pathName === '/product') {
+      res.end('this is a product page')
+   } else {
+      /* NOTE return 404 if the resource not found */
+      res.writeHead(404, {
+         'Content-Type': 'text/html',
+         'my-own-header': 'hello-world'
+      })
+      res.end('<h1>Page not found</h1>')
+   }
 })
 
 server.listen(8000, '127.0.0.1', () => {
