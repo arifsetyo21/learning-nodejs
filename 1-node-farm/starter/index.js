@@ -29,6 +29,11 @@ console.log('File Written!') */
 console.log('will read file!');
 */
 
+/* NOTE loading file syncronously for eficiency */
+/* This code will not calling again after first request */
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const productData = JSON.parse(data)
+
 ////////////////// NOTE SERVER and URL(Routings)
 const server = http.createServer((req, res) => {
    const pathName = req.url
@@ -39,6 +44,9 @@ const server = http.createServer((req, res) => {
       res.end('this is a overview page')
    } else if ( pathName === '/product') {
       res.end('this is a product page')
+   } else if ( pathName === '/api'){      
+      res.writeHead(200, {'Content-Type' : 'application/json'})
+      res.end(data)   
    } else {
       /* NOTE return 404 if the resource not found */
       res.writeHead(404, {
