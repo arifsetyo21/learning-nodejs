@@ -1,6 +1,8 @@
 const fs = require('fs')
 const http = require('http')
 const url = require('url')
+/* NOTE require must order from core module, 3rd module, own module */
+const slugify = require('slugify')
 /* NOTE Require module that we make for replace Template */
 const replaceTemplate = require('./modules/replaceTemplate')
 
@@ -38,6 +40,8 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 /* This code will not calling again after first request */
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data)
+
+console.log(slugify('Fresh Avocado', {lower : true}))
 
 ////////////////// NOTE SERVER and URL(Routings)
 const server = http.createServer((req, res) => {
