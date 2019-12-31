@@ -55,27 +55,35 @@ const dataObj = JSON.parse(data)
 
 ////////////////// NOTE SERVER and URL(Routings)
 const server = http.createServer((req, res) => {
-   const pathName = req.url
-   console.log(req.url);
 
+   // console.log(req.url)
+   // console.log(url.parse(req.url, true))
+   /* NOTE get query and pathname only */
+   let { query, pathname } =  url.parse(req.url, true)
+   // const pathName = req.url
+   
    /* NOTE Native routing with if clause */
    /* NOTE Overview Page */
-   if (pathName === '/' || pathName === '/overview') {
+   if (pathname === '/' || pathname === '/overview') {
       res.writeHead(200, {'Content-Type' : 'text/html'})
 
       /* NOTE for replace template template-card in element we defined */
       /* cardsHtml is an array, add join('') will join the array  */
       const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('')
-      console.log(cardsHtml);
+      // console.log(cardsHtml);
       const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml)
       res.end(output)
       
    /* NOTE Product Page */
-   } else if ( pathName === '/product') {
-      res.end('this is a product page')
+   } else if ( pathname === '/product') {
+      res.writeHead(200, {'Content-Type' : 'text/html'})
+      const product = dataObj[query.id]
+      const output = replaceTemplate(tempProduct, product)
+      // console.log(output)
 
+      res.end(output)
    /* NOTE API */
-   } else if ( pathName === '/api'){      
+   } else if ( pathname === '/api'){      
       res.writeHead(200, {'Content-Type' : 'application/json'})
       res.end(data)   
    
