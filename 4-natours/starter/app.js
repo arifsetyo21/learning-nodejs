@@ -56,11 +56,27 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       });
    }
 
-   res.status(200).json({
+   /* NOTE 201 mean created */
+   res.status(201).json({
       status: 'success',
       data: {
          tour: '<Updated tour here>'
       }
+   });
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+   if (req.params.id > tours.length) {
+      res.status(404).json({
+         status: 'fail',
+         message: 'invalid ID'
+      });
+   }
+
+   /* NOTE 204 mean No Content => There is no content to send for this request */
+   res.status(204).json({
+      status: 'success',
+      data: null
    });
 });
 
