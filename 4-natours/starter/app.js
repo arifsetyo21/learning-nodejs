@@ -1,15 +1,23 @@
+const fs = require('fs');
 const express = require('express');
 
 const app = express();
 
 const port = 8000;
 
-app.get('/', function(req, res) {
-   /* NOTE if want send with html */
-   // res.status(200).send('Hello World!');
+const tours = JSON.parse(
+   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
 
-   /* NOTE if want send with json */
-   res.status(200).json({ message: 'Hello from server side!', app: 'Natours' });
+app.get('/api/v1/tours', function(req, res) {
+   /* NOTE data : tours is shorthand type if we has same variable name between key pair */
+   res.status(200).json({
+      status: 'success',
+      result: tours.length,
+      data: {
+         tours
+      }
+   });
 });
 
 app.post('/', (req, res) => {
