@@ -1,10 +1,13 @@
 const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
+const tourRouter = require('./routers/tourRoutes');
+const userRouter = require('./routers/userRoutes');
 
 const app = express();
 
 /* 1. MIDDLEWARE */
+/* NOTE This is middleware for all routes */
 /* NOTE using 3rd party mi */
 app.use(morgan('dev'));
 
@@ -23,131 +26,7 @@ app.use((req, res, next) => {
    next();
 });
 
-const tours = JSON.parse(
-   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-
 /* 2. CONTROLLERS */
-const getAllTours = function(req, res) {
-   /* NOTE data : tours is shorthand type if we has same variable name between key pair */
-   res.status(200).json({
-      status: 'success',
-      result: tours.length,
-      requestAt: req.requestTime,
-      data: {
-         tours
-      }
-   });
-};
-
-const getTour = function(req, res) {
-   /* NOTE request spesific data with id param */
-   /* NOTE * 1 will convert string like integer to integer data type */
-   const id = req.params.id * 1;
-
-   /* NOTE find object with id object, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find */
-   const tour = tours.find(el => el.id === id);
-
-   // if (id > tours.length) {
-   /* NOTE  if tour not found, its will return undefined */
-   if (!tour) {
-      return res.status(404).json({
-         status: 'fail',
-         message: 'Invalid ID'
-      });
-   }
-
-   res.status(200).json({
-      status: 'success',
-      data: {
-         tour
-      }
-   });
-};
-
-const updateTour = (req, res) => {
-   if (req.params.id > tours.length) {
-      res.status(404).json({
-         status: 'fail',
-         message: 'invalid ID'
-      });
-   }
-
-   /* NOTE 201 mean created */
-   res.status(201).json({
-      status: 'success',
-      data: {
-         tour: '<Updated tour here>'
-      }
-   });
-};
-
-const deleteTour = (req, res) => {
-   if (req.params.id > tours.length) {
-      res.status(404).json({
-         status: 'fail',
-         message: 'invalid ID'
-      });
-   }
-
-   /* NOTE 204 mean No Content => There is no content to send for this request */
-   res.status(204).json({
-      status: 'success',
-      data: null
-   });
-};
-
-const createTour = (req, res) => {
-   const newId = tours[tours.length - 1].id + 1;
-   const newTour = Object.assign({ id: newId }, req.body);
-
-   tours.push(newTour);
-
-   fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
-      JSON.stringify(tours),
-      err => {
-         res.status(201).json({
-            status: 'success',
-            data: {
-               tour: newTour
-            }
-         });
-      }
-   );
-};
-
-const getAllUsers = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'this route is not yet defined'
-   });
-};
-
-const createUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'this route is not yet defined'
-   });
-};
-const getUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'this route is not yet defined'
-   });
-};
-const updateUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'this route is not yet defined'
-   });
-};
-const deteleUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'this route is not yet defined'
-   });
-};
 
 /* NOTE Refactoring routes solution 1 */
 // app.get('/api/v1/tours', getAllTours);
@@ -157,38 +36,18 @@ const deteleUser = (req, res) => {
 // app.post('/api/v1/tours', createTour);
 
 /* 3. ROUTING */
-
-/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
-const tourRouter = express.Router();
-const userRouter = express.Router();
-
-/* NOTE Refactoring routes solution 2 */
-tourRouter
-   .route('/')
-   .get(getAllTours)
-   .post(createTour);
-
-tourRouter
-   .route('/:id')
-   .get(getTour)
-   .patch(updateTour)
-   .delete(deleteTour);
-
-/* NOTE Adding user route resource */
-userRouter
-   .route('/')
-   .get(getAllUsers)
-   .post(createUser);
-
-userRouter
-   .route('/:id')
-   .get(getUser)
-   .patch(updateUser)
-   .delete(deteleUser);
-
-/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
+/* NOTE This is middleware for spesifict routes */
+/* NOTE Refactoring 4 route solution, Manage file structure with separate routing to other directory */
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
+
+/* NOTE Refactoring routes solution 2 */
+
+/* NOTE Adding user route resource */
+
+/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
 
 /* 4. SERVER */
 const port = 8000;
