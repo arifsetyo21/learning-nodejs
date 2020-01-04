@@ -15,6 +15,16 @@ exports.checkId = function(req, res, next, val) {
    next();
 };
 
+exports.checkBody = function(req, res, next) {
+   if (!req.body.name || !req.body.price) {
+      return res.status(400).json({
+         status: 'fail',
+         message: 'missing name and price property'
+      });
+   }
+   next();
+};
+
 exports.getAllTours = function(req, res) {
    /* NOTE data : tours is shorthand type if we has same variable name between key pair */
    return res.status(200).json({
@@ -79,7 +89,7 @@ exports.createTour = (req, res) => {
    tours.push(newTour);
 
    fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
+      `${__dirname}/../../dev-data/data/tours-simple.json`,
       JSON.stringify(tours),
       err => {
          res.status(201).json({
