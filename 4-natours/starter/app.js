@@ -8,7 +8,10 @@ const app = express();
 /* 1. MIDDLEWARE */
 /* NOTE This is middleware for all routes */
 /* NOTE using 3rd party mi */
-app.use(morgan('dev'));
+/* NOTE create diffrent run if in development and production */
+if (process.env.NODE_ENV === 'development') {
+   app.use(morgan('dev'));
+}
 
 /* NOTE This is how use middleware in express */
 app.use(express.json());
