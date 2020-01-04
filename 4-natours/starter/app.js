@@ -1,16 +1,21 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
+
+app.use(morgan('dev'));
 
 /* NOTE This is how use middleware in express */
 app.use(express.json());
 
+/* NOTE Creating own middleware for first time, with Hello */
 app.use((req, res, next) => {
    console.log('Hello from middleware!!!');
    next();
 });
 
+/* NOTE Creating own middleware to manipulate response and request */
 app.use((req, res, next) => {
    req.requestTime = new Date().toISOString();
    next();
