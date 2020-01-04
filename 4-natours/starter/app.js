@@ -4,6 +4,7 @@ const morgan = require('morgan');
 
 const app = express();
 
+/* NOTE using 3rd party mi */
 app.use(morgan('dev'));
 
 /* NOTE This is how use middleware in express */
@@ -114,6 +115,38 @@ const createTour = (req, res) => {
    );
 };
 
+const getAllUsers = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'this route is not yet defined'
+   });
+};
+
+const createUser = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'this route is not yet defined'
+   });
+};
+const getUser = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'this route is not yet defined'
+   });
+};
+const updateUser = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'this route is not yet defined'
+   });
+};
+const deteleUser = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'this route is not yet defined'
+   });
+};
+
 /* NOTE Refactoring routes solution 1 */
 // app.get('/api/v1/tours', getAllTours);
 // app.get('/api/v1/tours/:id', getTour);
@@ -130,6 +163,16 @@ app.route('/api/v1/tours/:id')
    .get(getTour)
    .patch(updateTour)
    .delete(deleteTour);
+
+/* NOTE Adding user route resource */
+app.route('/api/v1/users')
+   .get(getAllUsers)
+   .post(createUser);
+
+app.route('/api/v1/users/:id')
+   .get(getUser)
+   .patch(updateUser)
+   .delete(deteleUser);
 
 const port = 8000;
 app.listen(port, () => {
