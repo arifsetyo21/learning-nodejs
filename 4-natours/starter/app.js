@@ -4,6 +4,7 @@ const morgan = require('morgan');
 
 const app = express();
 
+/* 1. MIDDLEWARE */
 /* NOTE using 3rd party mi */
 app.use(morgan('dev'));
 
@@ -26,6 +27,7 @@ const tours = JSON.parse(
    fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+/* 2. CONTROLLERS */
 const getAllTours = function(req, res) {
    /* NOTE data : tours is shorthand type if we has same variable name between key pair */
    res.status(200).json({
@@ -154,26 +156,41 @@ const deteleUser = (req, res) => {
 // app.delete('/api/v1/tours/:id', deleteTour);
 // app.post('/api/v1/tours', createTour);
 
+/* 3. ROUTING */
+
+/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
 /* NOTE Refactoring routes solution 2 */
-app.route('/api/v1/tours')
+tourRouter
+   .route('/')
    .get(getAllTours)
    .post(createTour);
 
-app.route('/api/v1/tours/:id')
+tourRouter
+   .route('/:id')
    .get(getTour)
    .patch(updateTour)
    .delete(deleteTour);
 
 /* NOTE Adding user route resource */
-app.route('/api/v1/users')
+userRouter
+   .route('/')
    .get(getAllUsers)
    .post(createUser);
 
-app.route('/api/v1/users/:id')
+userRouter
+   .route('/:id')
    .get(getUser)
    .patch(updateUser)
    .delete(deteleUser);
 
+/* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+/* 4. SERVER */
 const port = 8000;
 app.listen(port, () => {
    console.log(`App running on port ${port}...`);
