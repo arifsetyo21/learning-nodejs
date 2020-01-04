@@ -6,6 +6,16 @@ const app = express();
 /* NOTE This is how use middleware in express */
 app.use(express.json());
 
+app.use((req, res, next) => {
+   console.log('Hello from middleware!!!');
+   next();
+});
+
+app.use((req, res, next) => {
+   req.requestTime = new Date().toISOString();
+   next();
+});
+
 const tours = JSON.parse(
    fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
@@ -15,6 +25,7 @@ const getAllTours = function(req, res) {
    res.status(200).json({
       status: 'success',
       result: tours.length,
+      requestAt: req.requestTime,
       data: {
          tours
       }
