@@ -13,6 +13,8 @@ app.use(morgan('dev'));
 /* NOTE This is how use middleware in express */
 app.use(express.json());
 
+app.use(express.static(`${__dirname}/public`));
+
 /* NOTE Creating own middleware for first time, with Hello */
 app.use((req, res, next) => {
    console.log('Hello from middleware!!!');
