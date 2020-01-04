@@ -1,4 +1,3 @@
-const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./routers/tourRoutes');
@@ -49,8 +48,4 @@ app.use('/api/v1/users', userRouter);
 
 /* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
 
-/* 4. SERVER */
-const port = 8000;
-app.listen(port, () => {
-   console.log(`App running on port ${port}...`);
-});
+module.exports = app;
