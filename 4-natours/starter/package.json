@@ -5,7 +5,7 @@
    "main": "app.js",
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "start:dev": "nodemon server.js",
+      "start": "nodemon server.js",
       "start:prod": "NODE_ENV=production nodemon server.js"
    },
    "author": "Arif Setyo Nugroho",
@@ -13,6 +13,18 @@
    "dependencies": {
       "dotenv": "^8.2.0",
       "express": "^4.17.1",
+      "mongoose": "^5.8.5",
       "morgan": "^1.9.1"
+   },
+   "devDependencies": {
+      "eslint": "^6.8.0",
+      "eslint-config-airbnb": "^18.0.1",
+      "eslint-config-prettier": "^6.9.0",
+      "eslint-plugin-import": "^2.19.1",
+      "eslint-plugin-jsx-a11y": "^6.2.3",
+      "eslint-plugin-node": "^11.0.0",
+      "eslint-plugin-prettier": "^3.1.2",
+      "eslint-plugin-react": "^7.17.0",
+      "prettier": "^1.19.1"
    }
 }
