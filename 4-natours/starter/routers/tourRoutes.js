@@ -10,7 +10,7 @@ router.param('id', (req, res, next, val) => {
 });
 
 /* NOTE Calling middleware from tourController */
-router.param('id', tourController.checkId);
+// router.param('id', tourController.checkId);
 
 router
    .route('/')
