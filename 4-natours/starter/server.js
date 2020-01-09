@@ -5,13 +5,17 @@ const app = require('./app');
 
 dotenv.config({ path: './.env' });
 
+/* NOTE Mongodb local */
+const DB_LOCAL = process.env.DATABASE_MONGO_LOCAL;
+
+/* NOTE Mongodb free from mongodb.com */
 const DB = process.env.DATABASE_MONGO.replace(
    '<PASSWORD>',
    process.env.DATABASE_PASSWORD
 );
 
 mongoose
-   .connect(DB, {
+   .connect(DB_LOCAL, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
@@ -20,6 +24,20 @@ mongoose
    .then(() => {
       // console.log(conn.connections);
       console.log('db connection successfuly');
+   })
+   .catch(error => {
+      console.log(error);
+      mongoose
+         .connect(DB, {
+            useNewUrlParser: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+            useUnifiedTopology: true
+         })
+         .then(() => {
+            // console.log(conn.connections);
+            console.log('db connection local successfuly');
+         });
    });
 
 // const testTour = new Tour({
