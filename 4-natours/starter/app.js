@@ -1,7 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
+const dotenv = require('dotenv');
 const indexRouter = require('./routers/index');
 
+dotenv.config({ path: './.env' });
 const app = express();
 
 /* 1. MIDDLEWARE */
