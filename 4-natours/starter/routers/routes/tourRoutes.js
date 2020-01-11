@@ -1,6 +1,6 @@
 /* NOTE Refactoring 4 route solution, Manage file structure with separate routing to other directory */
 const express = require('express');
-const tourController = require('../controllers/tourController');
+const tourController = require('../../controllers/tourController');
 
 const router = express.Router();
 
@@ -8,6 +8,10 @@ router.param('id', (req, res, next, val) => {
    console.log(`Tour id is : ${val}`);
    next();
 });
+
+router
+   .route('/top-5-cheap')
+   .get(tourController.aliasTopTours, tourController.getAllTours);
 
 /* NOTE Calling middleware from tourController */
 // router.param('id', tourController.checkId);

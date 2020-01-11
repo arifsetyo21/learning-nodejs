@@ -1,6 +1,6 @@
 /* NOTE Refactoring 4 route solution, Manage file structure with separate routing to other directory */
 const express = require('express');
-const userController = require('../controllers/userController');
+const userController = require('../../controllers/userController');
 
 const router = express.Router();
 router

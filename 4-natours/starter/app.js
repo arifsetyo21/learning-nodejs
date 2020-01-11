@@ -1,7 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
-const tourRouter = require('./routers/tourRoutes');
-const userRouter = require('./routers/userRoutes');
+const indexRouter = require('./routers/index');
 
 const app = express();
 
@@ -42,8 +41,9 @@ app.use((req, res, next) => {
 /* 3. ROUTING */
 /* NOTE This is middleware for spesifict routes */
 /* NOTE Refactoring 4 route solution, Manage file structure with separate routing to other directory */
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
+// app.use('/api/v1/tours', tourRouter);
+// app.use('/api/v1/users', userRouter);
+app.use('/api/v1', indexRouter);
 
 /* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
 

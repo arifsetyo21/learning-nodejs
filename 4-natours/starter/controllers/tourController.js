@@ -1,5 +1,12 @@
 const Tour = require('./../models/tourModel');
 
+exports.aliasTopTours = async (req, res, next) => {
+   req.query.limit = 5;
+   req.query.sort = '-ratingsAverage,price';
+   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+   next();
+};
+
 exports.getAllTours = async function(req, res) {
    try {
       // BUILD QUERY
@@ -32,6 +39,25 @@ exports.getAllTours = async function(req, res) {
          query = query.select('-__v');
       }
 
+      // 4. Pagination
+      // ?limit=5&page=3 | page=1 content=1-5, page=2 content=6-10, page=3 content=11-15
+      const page = req.query.page * 1 || 1;
+      const limit = req.query.limit * 1 || 1;
+      const skip = (page - 1) * limit;
+
+      query = query.skip(skip).limit(limit);
+
+      if (req.query.page) {
+         // Get count document
+         const numTours = await Tour.countDocuments();
+         if (skip >= numTours) {
+            res.status(400).json({
+               status: 'fail',
+               message: 'data not available'
+            });
+         }
+      }
+
       // EXECUTE QUERY
       const tours = await query;
 
@@ -40,6 +66,7 @@ exports.getAllTours = async function(req, res) {
       res.status(200).json({
          status: 'success',
          result: tours.length,
+         page: page,
          data: {
             tours
          }
