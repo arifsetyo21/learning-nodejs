@@ -7,9 +7,9 @@ const tourSchema = new mongoose.Schema({
       required: [true, 'a tour must have a name'], //Validation
       unique: true
    },
-   durations: {
+   duration: {
       type: Number,
-      require: [true, 'A tour must have duration']
+      required: [true, 'A tour must have duration']
    },
    maxGroupSize: {
       type: Number,
