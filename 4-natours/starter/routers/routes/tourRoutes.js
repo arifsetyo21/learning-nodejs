@@ -14,6 +14,7 @@ router
    .get(tourController.aliasTopTours, tourController.getAllTours);
 
 router.route('/stats').get(tourController.getTourStats);
+router.route('/montly-plan/:year').get(tourController.monthlyPlan);
 
 /* NOTE Calling middleware from tourController */
 // router.param('id', tourController.checkId);

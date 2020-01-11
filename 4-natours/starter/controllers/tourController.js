@@ -160,3 +160,59 @@ exports.getTourStats = async (req, res) => {
       });
    }
 };
+
+module.exports.monthlyPlan = async (req, res) => {
+   try {
+      const year = req.params.year * 1;
+      const plan = await Tour.aggregate([
+         {
+            // $unwind for devide an array to new array but separate from parent
+            $unwind: '$startDates'
+         },
+         {
+            // for matching and filtering
+            $match: {
+               startDates: {
+                  $gte: new Date(`${year}-01-01`),
+                  $lte: new Date(`${year}-12-31`)
+               }
+            }
+         },
+         {
+            // for grouping fields
+            $group: {
+               _id: { $month: '$startDates' },
+               numTourStarts: { $sum: 1 },
+               tours: { $push: '$name' }
+            }
+         },
+         {
+            // for adding fields
+            $addFields: { month: '$_id' }
+         },
+         {
+            // For remove fields
+            $project: { _id: 0 }
+         },
+         {
+            // for sorting
+            $sort: { numTourStarts: -1 }
+         },
+         {
+            // for limiting output
+            $limit: 12
+         }
+      ]);
+      res.status(200).json({
+         status: 'success',
+         data: {
+            plan
+         }
+      });
+   } catch (error) {
+      res.status(404).json({
+         status: 'fail',
+         message: 'not found!'
+      });
+   }
+};
