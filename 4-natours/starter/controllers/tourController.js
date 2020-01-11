@@ -1,4 +1,5 @@
 const Tour = require('./../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 exports.aliasTopTours = async (req, res, next) => {
    req.query.limit = 5;
@@ -10,63 +11,20 @@ exports.aliasTopTours = async (req, res, next) => {
 exports.getAllTours = async function(req, res) {
    try {
       // BUILD QUERY
-      // 1A. Filtering Basic
-      const queryObj = { ...req.query };
-      const excludedFields = ['page', 'sort', 'limit', 'fields'];
-      excludedFields.forEach(el => delete queryObj[el]);
-      console.log(queryObj);
-
-      // 1B. Advance Filtering
-      let queryStr = JSON.stringify(queryObj);
-      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-      console.log(JSON.parse(queryStr));
-
-      let query = Tour.find(JSON.parse(queryStr));
-
-      // 2. Sorting
-      if (req.query.sort) {
-         const sortBy = req.query.sort.split(',').join(' ');
-         query = query.sort(sortBy);
-      } else {
-         query = query.sort('-createdAt');
-      }
-
-      // 3. Limiting Output Fields
-      if (req.query.fields) {
-         const fields = req.query.fields.split(',').join(' ');
-         query = query.select(fields);
-      } else {
-         query = query.select('-__v');
-      }
-
-      // 4. Pagination
-      // ?limit=5&page=3 | page=1 content=1-5, page=2 content=6-10, page=3 content=11-15
-      const page = req.query.page * 1 || 1;
-      const limit = req.query.limit * 1 || 1;
-      const skip = (page - 1) * limit;
-
-      query = query.skip(skip).limit(limit);
-
-      if (req.query.page) {
-         // Get count document
-         const numTours = await Tour.countDocuments();
-         if (skip >= numTours) {
-            res.status(400).json({
-               status: 'fail',
-               message: 'data not available'
-            });
-         }
-      }
+      const features = new APIFeatures(Tour.find(), req.query)
+         .filter()
+         .sort()
+         .limit()
+         .paginate();
 
       // EXECUTE QUERY
-      const tours = await query;
+      const tours = await features.query;
 
       // SEND RESPONSE
       /* NOTE data : tours is shorthand type if we has same variable name between key pair */
       res.status(200).json({
          status: 'success',
          result: tours.length,
-         page: page,
          data: {
             tours
          }
