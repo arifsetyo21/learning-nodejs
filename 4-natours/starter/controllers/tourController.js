@@ -2,7 +2,20 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async function(req, res) {
    try {
-      const tours = await Tour.find();
+      // BUILD QUERY
+      const queryObj = { ...req.query };
+      const excludedFields = ['page', 'sort', 'limit', 'fields'];
+
+      excludedFields.forEach(el => delete queryObj[el]);
+
+      console.log(queryObj);
+
+      const query = Tour.find(queryObj);
+
+      // EXECUTE QUERY
+      const tours = await query;
+
+      // SEND RESPONSE
       /* NOTE data : tours is shorthand type if we has same variable name between key pair */
       res.status(200).json({
          status: 'success',
@@ -39,22 +52,42 @@ exports.getTour = async function(req, res) {
    }
 };
 
-exports.updateTour = (req, res) => {
-   /* NOTE 201 mean created */
-   return res.status(201).json({
-      status: 'success',
-      data: {
-         tour: '<Updated tour here>'
-      }
-   });
+exports.updateTour = async (req, res) => {
+   try {
+      const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+         new: true,
+         runValidators: true
+      });
+      /* NOTE 201 mean created */
+      return res.status(201).json({
+         status: 'success',
+         data: {
+            tour
+         }
+      });
+   } catch (error) {
+      res.status(404).json({
+         status: 'fail',
+         message: 'not found!'
+      });
+   }
 };
 
-exports.deleteTour = (req, res) => {
-   /* NOTE 204 mean No Content => There is no content to send for this request */
-   return res.status(204).json({
-      status: 'success',
-      data: null
-   });
+exports.deleteTour = async (req, res) => {
+   try {
+      await Tour.findByIdAndDelete(req.params.id);
+      /* NOTE 204 mean No Content => There is no content to send for this request */
+      return res.status(204).json({
+         status: 'success',
+         data: null
+      });
+   } catch (error) {
+      res.status(404).json({
+         status: 'fail',
+         message: 'not found!',
+         error
+      });
+   }
 };
 
 exports.createTour = async (req, res) => {
