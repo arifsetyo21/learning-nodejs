@@ -96,16 +96,23 @@ tourSchema.pre('save', function(next) {
 
 // NOTE Query Middleware
 // tourSchema.pre('find', function(next) {
-tourSchema.pre(/^find/, function(next) {
-   //with regular expression, /^find/ this will filter the query method which start with find, like findOne, findOrCreate, findAll
-   this.find({ secretTour: { $ne: true } });
+// tourSchema.pre(/^find/, function(next) {
+//    //with regular expression, /^find/ this will filter the query method which start with find, like findOne, findOrCreate, findAll
+//    this.find({ secretTour: { $ne: true } });
 
-   this.start = Date.now();
-   next();
-});
+//    this.start = Date.now();
+//    next();
+// });
 
-tourSchema.post(/^find/, function(doc, next) {
-   console.log(`Query took ${Date.now() - this.start} milisecond!`);
+// tourSchema.post(/^find/, function(doc, next) {
+//    console.log(`Query took ${Date.now() - this.start} milisecond!`);
+//    next();
+// });
+
+// NOTE Aggregation Middleware
+tourSchema.pre('aggregate', function(next) {
+   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+   console.log(this.pipeline());
    next();
 });
 
