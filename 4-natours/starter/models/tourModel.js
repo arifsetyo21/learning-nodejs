@@ -60,7 +60,11 @@ const tourSchema = new mongoose.Schema(
          type: Date,
          default: Date.now()
       },
-      startDates: [Date]
+      startDates: [Date],
+      secretTour: {
+         type: Boolean,
+         default: false
+      }
    },
    {
       toJSON: { virtuals: true },
@@ -79,13 +83,29 @@ tourSchema.pre('save', function(next) {
    // console.log(this);
 });
 
-tourSchema.pre('save', function(next) {
-   console.log('will save document');
+// NOTE Document middleware
+// tourSchema.pre('save', function(next) {
+//    console.log('will save document');
+//    next();
+// });
+
+// tourSchema.post('save', function(doc, next) {
+//    console.log(doc);
+//    next();
+// });
+
+// NOTE Query Middleware
+// tourSchema.pre('find', function(next) {
+tourSchema.pre(/^find/, function(next) {
+   //with regular expression, /^find/ this will filter the query method which start with find, like findOne, findOrCreate, findAll
+   this.find({ secretTour: { $ne: true } });
+
+   this.start = Date.now();
    next();
 });
 
-tourSchema.post('save', function(doc, next) {
-   console.log(doc);
+tourSchema.post(/^find/, function(doc, next) {
+   console.log(`Query took ${Date.now() - this.start} milisecond!`);
    next();
 });
 
