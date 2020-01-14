@@ -80,3 +80,38 @@ exports.login = async (req, res, next) => {
       });
    }
 };
+
+exports.protect = async (req, res, next) => {
+   try {
+      let token;
+
+      // 1. Getting token and check of it's there
+      if (
+         req.headers.authorization &&
+         req.headers.authorization.startsWith('Bearer')
+      ) {
+         token = req.headers.authorization;
+      }
+      console.log(token);
+
+      // 2. Validate the token
+      // Check token validation, if token is present`
+      if (!token) {
+         res.status(401).json({
+            status: 'fail',
+            message: 'token not available, please login'
+         });
+      }
+
+      // 3. Check if user still exists
+
+      // 4. Check if user changed password after the JWT was issued
+
+      next();
+   } catch (error) {
+      res.status(401).json({
+         status: 'fail',
+         message: error
+      });
+   }
+};

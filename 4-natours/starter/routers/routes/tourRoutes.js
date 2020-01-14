@@ -1,5 +1,6 @@
 /* NOTE Refactoring 4 route solution, Manage file structure with separate routing to other directory */
 const express = require('express');
+const authController = require('../../controllers/authController');
 const tourController = require('../../controllers/tourController');
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.route('/montly-plan/:year').get(tourController.monthlyPlan);
 
 router
    .route('/')
-   .get(tourController.getAllTours)
+   .get(authController.protect, tourController.getAllTours)
    /* NOTE Make readable code with use access method from tourController object */
    .post(tourController.createTour);
 

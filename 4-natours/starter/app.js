@@ -28,6 +28,8 @@ app.use((req, res, next) => {
 /* NOTE Creating own middleware to manipulate response and request */
 app.use((req, res, next) => {
    req.requestTime = new Date().toISOString();
+   // Check availibility token
+   console.log(req.headers);
    next();
 });
 
