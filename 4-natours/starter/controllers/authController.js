@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 // const AppError = require('');
@@ -16,7 +17,8 @@ exports.signup = async (req, res, next) => {
          name: req.body.name,
          email: req.body.email,
          password: req.body.password,
-         passwordConfirm: req.body.passwordConfirm
+         passwordConfirm: req.body.passwordConfirm,
+         passwordUpdatedAt: req.body.passwordUpdatedAt
       });
 
       const token = signToken(newUser._id);
@@ -90,11 +92,11 @@ exports.protect = async (req, res, next) => {
          req.headers.authorization &&
          req.headers.authorization.startsWith('Bearer')
       ) {
-         token = req.headers.authorization;
+         // for remove Bearer key from token
+         token = req.headers.authorization.replace('Bearer ', '');
       }
       console.log(token);
 
-      // 2. Validate the token
       // Check token validation, if token is present`
       if (!token) {
          res.status(401).json({
@@ -103,10 +105,35 @@ exports.protect = async (req, res, next) => {
          });
       }
 
+      // 2. Validate the token
+      const decoded = await promisify(jwt.verify)(
+         token,
+         process.env.JWT_SECRET
+      );
+
+      // console.log('decoded', decoded);
+
       // 3. Check if user still exists
+      const currentUser = await User.findOne({ _id: decoded.id });
+      if (!currentUser) {
+         res.status(401).json({
+            status: 'fail',
+            message: "user doesn't exists"
+         });
+      }
+      // console.log(currentUser.name);
 
       // 4. Check if user changed password after the JWT was issued
+      if (await currentUser.checkPasswordUpdatedAfterLogin(decoded.iat)) {
+         res.status(401).json({
+            status: 'fail',
+            message: 'User recently changed password! Please login again'
+         });
+      }
 
+      // Assign user finded to req object
+      req.user = currentUser;
+      // FORWARD TO NEXT MIDDLEWARE
       next();
    } catch (error) {
       res.status(401).json({
