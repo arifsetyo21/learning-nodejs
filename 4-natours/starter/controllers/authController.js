@@ -18,7 +18,8 @@ exports.signup = async (req, res, next) => {
          email: req.body.email,
          password: req.body.password,
          passwordConfirm: req.body.passwordConfirm,
-         passwordUpdatedAt: req.body.passwordUpdatedAt
+         passwordUpdatedAt: req.body.passwordUpdatedAt,
+         role: req.body.role
       });
 
       const token = signToken(newUser._id);
@@ -141,4 +142,18 @@ exports.protect = async (req, res, next) => {
          message: error
       });
    }
+};
+
+exports.restrictTo = (...roles) => {
+   return (req, res, next) => {
+      // roles ['admin', 'lead-guide'], role='user'
+      if (!roles.includes(req.user.role)) {
+         res.status(403).json({
+            status: 'fail',
+            message: "you hasn't permission in this resource"
+         });
+      }
+
+      next();
+   };
 };
