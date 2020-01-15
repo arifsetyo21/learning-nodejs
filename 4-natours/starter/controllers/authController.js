@@ -157,3 +157,23 @@ exports.restrictTo = (...roles) => {
       next();
    };
 };
+
+exports.fogotPassword = async (req, res, next) => {
+   // will send email address
+   // 1. Get user based on email
+   const user = await User.findOne({ email: req.body.email });
+   if (!user) {
+      res.status(404).json({
+         status: 'fail',
+         message: 'user not found'
+      });
+   }
+   // 2. Generate random reset token
+   const resetToken = await user.createPasswordResetToken();
+   await user.save({ validateBeforeSave: false });
+
+   // 3. Send it to user email
+};
+exports.resetPassword = (req, res, next) => {
+   // will receive token
+};
