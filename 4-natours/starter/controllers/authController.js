@@ -2,6 +2,7 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 // const AppError = require('');
+const sendEmail = require('../utils/email');
 
 // Create token for send to user
 const signToken = id => {
@@ -173,6 +174,35 @@ exports.fogotPassword = async (req, res, next) => {
    await user.save({ validateBeforeSave: false });
 
    // 3. Send it to user email
+   const resetURL = `${req.protocol}://${req.get(
+      'host'
+   )}/api/v1/users/resetPassword/${resetToken}`;
+
+   const message = `Forgot password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n if you didn't forgot your password, please ignore this email`;
+
+   console.log(message);
+
+   try {
+      await sendEmail({
+         email: user.email,
+         subject: 'Your password reset token (valid for 10 minutes)',
+         message
+      });
+
+      res.status(200).json({
+         status: 'success',
+         message: 'Token sent to email!'
+      });
+   } catch (error) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      res.status(500).json({
+         status: 'fail',
+         message: error
+      });
+   }
 };
 exports.resetPassword = (req, res, next) => {
    // will receive token
