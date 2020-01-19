@@ -58,6 +58,14 @@ userSchema.pre('save', async function(next) {
    next();
 });
 
+userSchema.pre('save', async function(next) {
+   if (!this.isModified('password') || this.isNew) return next();
+
+   // NOTE Put 1s backward to passwordUpdatedAt property to assign a valid token for sign in because new passwordUpdatedAt has assign more first than token
+   this.passwordUpdatedAt = Date.now() - 1000;
+   next();
+});
+
 userSchema.methods.correctPassword = async function(
    candidatePassword,
    userPassword
