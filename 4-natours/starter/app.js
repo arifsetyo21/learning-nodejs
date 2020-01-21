@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const rateLimit = require('express-rate-limit');
+
 const indexRouter = require('./routers/index');
 
 dotenv.config({ path: './.env' });
@@ -13,6 +15,15 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
    app.use(morgan('dev'));
 }
+
+// NOTE Create limiter for limit request user per IP with express-rate-limit
+const limiter = rateLimit({
+   max: 100,
+   windowMs: 60 * 60 * 1000,
+   message: 'Too many request from this IP, please try again in an hour'
+});
+
+app.use(limiter);
 
 /* NOTE This is how use middleware in express */
 app.use(express.json());
