@@ -89,3 +89,19 @@ exports.updateMe = async (req, res, next) => {
       });
    }
 };
+
+module.exports.deleteMe = async (req, res, next) => {
+   try {
+      await User.findByIdAndUpdate(req.user.id, { active: false });
+
+      res.status(204).json({
+         status: 'success',
+         result: null
+      });
+   } catch (error) {
+      res.status(400).json({
+         status: 'fail',
+         error
+      });
+   }
+};

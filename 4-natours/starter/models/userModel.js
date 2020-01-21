@@ -43,7 +43,11 @@ const userSchema = new mongoose.Schema({
    },
    passwordUpdatedAt: Date,
    passwordResetToken: String,
-   passwordResetExpires: Date
+   passwordResetExpires: Date,
+   active: {
+      type: Boolean,
+      default: true
+   }
 });
 
 userSchema.pre('save', async function(next) {
@@ -63,6 +67,12 @@ userSchema.pre('save', async function(next) {
 
    // NOTE Put 1s backward to passwordUpdatedAt property to assign a valid token for sign in because new passwordUpdatedAt has assign more first than token
    this.passwordUpdatedAt = Date.now() - 1000;
+   next();
+});
+
+userSchema.pre(/^find/, async function(next) {
+   // NOTE return user with active != false
+   this.find({ active: { $ne: false } });
    next();
 });
 
