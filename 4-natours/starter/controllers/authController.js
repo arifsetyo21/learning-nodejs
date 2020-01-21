@@ -136,6 +136,7 @@ exports.protect = async (req, res, next) => {
 
       // Assign user finded to req object
       req.user = currentUser;
+
       // FORWARD TO NEXT MIDDLEWARE
       next();
    } catch (error) {
@@ -237,6 +238,54 @@ exports.resetPassword = async (req, res, next) => {
 
       // 3. update changedPasswordAt property for the user, NOTE in the userModel.jss
       // 4. log the user in, send JWT
+      const token = signToken(user._id);
+
+      res.status(200).json({
+         status: 'success',
+         token
+      });
+   } catch (error) {
+      res.status(400).json({
+         status: 'fail',
+         error
+      });
+   }
+};
+
+module.exports.updatePassword = async (req, res, next) => {
+   try {
+      // console.log(req.user);
+
+      // 1. Get user from collection
+      const user = await User.findOne({ _id: req.user._id }).select(
+         '+password'
+      );
+
+      console.log(user);
+      console.log(req.body);
+
+      // 2. Check if POSTed current password is correct
+      const { passwordCurrent, password, passwordConfirm } = req.body;
+      const correct = await user.correctPassword(
+         passwordCurrent,
+         user.password
+      );
+
+      // 3. if so, update password
+      if (!user || !correct) {
+         res.status(400).json({
+            status: 'fail',
+            message: 'invalid account'
+         });
+      }
+
+      // new password
+      user.password = password;
+      // Password confirmation
+      user.passwordConfirm = passwordConfirm;
+      await user.save();
+
+      // 4. Log user in, send JWT
       const token = signToken(user._id);
 
       res.status(200).json({
