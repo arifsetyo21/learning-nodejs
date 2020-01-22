@@ -1,4 +1,7 @@
+const multer = require('multer');
 const User = require('./../models/userModel');
+
+const upload = multer({ dest: 'public/img/users' });
 
 const filterObj = (obj, ...allowedFields) => {
    const newObj = {};
@@ -8,6 +11,8 @@ const filterObj = (obj, ...allowedFields) => {
 
    return newObj;
 };
+
+exports.uploadUserPhoto = upload.single('photo');
 
 exports.getAllUsers = async (req, res) => {
    try {
@@ -57,6 +62,9 @@ exports.deteleUser = (req, res) => {
 };
 
 exports.updateMe = async (req, res, next) => {
+   console.log(req.file);
+   console.log(req.body);
+
    try {
       // 1. Create error if user request POSTs password data
       if (req.body.password || req.body.passwordConfirm) {

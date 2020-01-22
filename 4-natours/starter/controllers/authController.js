@@ -112,7 +112,7 @@ exports.protect = async (req, res, next) => {
       }
       console.log(token);
 
-      // Check token validation, if token is present`
+      // Check token validation, if token is present
       if (!token) {
          res.status(401).json({
             status: 'fail',
