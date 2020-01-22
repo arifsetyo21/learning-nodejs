@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const dotenv = require('dotenv');
 const indexRouter = require('./routers/index');
@@ -9,12 +11,15 @@ const indexRouter = require('./routers/index');
 dotenv.config({ path: './.env' });
 const app = express();
 
-/* 1. MIDDLEWARE */
+/* 1. GLOBAL MIDDLEWARE */
 
+// Set securing HTTP headers
 app.use(helmet());
+
 /* NOTE This is middleware for all routes */
 /* NOTE using 3rd party mi */
 /* NOTE create diffrent run if in development and production */
+// Development logging
 if (process.env.NODE_ENV === 'development') {
    app.use(morgan('dev'));
 }
@@ -26,14 +31,24 @@ const limiter = rateLimit({
    message: 'Too many request from this IP, please try again in an hour'
 });
 
-app.use(limiter);
+// Limiting request from same IP
+app.use('/api', limiter);
 
 /* NOTE This is how use middleware in express */
-app.use(express.json());
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
 
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Serving static files
 app.use(express.static(`${__dirname}/public`));
 
 /* NOTE Creating own middleware for first time, with Hello */
+// Test middleware
 app.use((req, res, next) => {
    console.log('Hello from middleware!!!');
    next();
