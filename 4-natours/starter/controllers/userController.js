@@ -1,8 +1,6 @@
 const multer = require('multer');
 const User = require('./../models/userModel');
 
-const upload = multer({ dest: 'public/img/users' });
-
 const filterObj = (obj, ...allowedFields) => {
    const newObj = {};
    Object.keys(obj).forEach(el => {
@@ -11,6 +9,27 @@ const filterObj = (obj, ...allowedFields) => {
 
    return newObj;
 };
+
+const multerStorage = multer.diskStorage({
+   destination: (req, file, cb) => {
+      cb(null, 'public/img/users');
+   },
+   filename: (req, file, cb) => {
+      // user-120912098-12091284.jpeg
+      const ext = file.mimetype.split('/')[1];
+      cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+   }
+});
+
+const multerFilter = (req, file, cb) => {
+   if (file.mimetype.startsWith('image')) {
+      cb(null, true);
+   } else {
+      console.log('error upload');
+   }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadUserPhoto = upload.single('photo');
 
