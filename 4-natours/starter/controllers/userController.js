@@ -1,3 +1,4 @@
+const sharp = require('sharp');
 const multer = require('multer');
 const User = require('./../models/userModel');
 
@@ -10,16 +11,20 @@ const filterObj = (obj, ...allowedFields) => {
    return newObj;
 };
 
-const multerStorage = multer.diskStorage({
-   destination: (req, file, cb) => {
-      cb(null, 'public/img/users');
-   },
-   filename: (req, file, cb) => {
-      // user-120912098-12091284.jpeg
-      const ext = file.mimetype.split('/')[1];
-      cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-   }
-});
+/* NOTE if want to save image without resizing or process image */
+// const multerStorage = multer.diskStorage({
+//    destination: (req, file, cb) => {
+//       cb(null, 'public/img/users');
+//    },
+//    filename: (req, file, cb) => {
+//       // user-120912098-12091284.jpeg
+//       const ext = file.mimetype.split('/')[1];
+//       cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//    }
+// });
+
+/* NOTE if want to resize image, save photo to memory first */
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
    if (file.mimetype.startsWith('image')) {
@@ -80,8 +85,22 @@ exports.deteleUser = (req, res) => {
    });
 };
 
+module.exports.resizeUserPhoto = (req, res, next) => {
+   if (!req.file) return next();
+
+   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+   sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/users/${req.file.filename}`);
+
+   next();
+};
+
 exports.updateMe = async (req, res, next) => {
-   // console.log(req.file);
+   console.log(req.file);
    // console.log(req.body);
 
    try {
