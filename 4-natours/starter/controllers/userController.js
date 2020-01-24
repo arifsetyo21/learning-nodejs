@@ -81,8 +81,8 @@ exports.deteleUser = (req, res) => {
 };
 
 exports.updateMe = async (req, res, next) => {
-   console.log(req.file);
-   console.log(req.body);
+   // console.log(req.file);
+   // console.log(req.body);
 
    try {
       // 1. Create error if user request POSTs password data
@@ -97,6 +97,8 @@ exports.updateMe = async (req, res, next) => {
       }
       // 2. Filtered out unwanted fields name that are not allowed to be updated
       const filteredBody = filterObj(req.body, 'name', 'email');
+      // NOTE to add image path file to filteredBody object
+      if (req.file) filteredBody.photo = req.file.filename;
 
       // 3. Update user document
       const updatedUser = await User.findByIdAndUpdate(
