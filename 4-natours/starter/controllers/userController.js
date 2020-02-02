@@ -80,6 +80,8 @@ exports.createUser = (req, res) => {
       message: 'this route is not yet defined'
    });
 };
+
+// TODO  Create function for detail user
 exports.getUser = (req, res) => {
    res.status(500).json({
       status: 'error',

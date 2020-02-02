@@ -3,7 +3,7 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 // TODO const AppError = require('');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 // NOTE Create token for send to user
 const signToken = id => {
@@ -47,6 +47,10 @@ exports.signup = async (req, res, next) => {
          passwordUpdatedAt: req.body.passwordUpdatedAt,
          role: req.body.role
       });
+
+      const url = `${req.protocol}://${req.get('host')}/me`;
+      console.log(url);
+      await new Email(newUser, url).sendWelcome();
 
       // NOTE using createSendToken method for send token
       createSendToken(newUser, 201, res);
@@ -197,11 +201,11 @@ exports.fogotPassword = async (req, res, next) => {
    console.log(message);
 
    try {
-      await sendEmail({
-         email: user.email,
-         subject: 'Your password reset token (valid for 10 minutes)',
-         message
-      });
+      // await sendEmail({
+      //    email: user.email,
+      //    subject: 'Your password reset token (valid for 10 minutes)',
+      //    message
+      // });
 
       res.status(200).json({
          status: 'success',
