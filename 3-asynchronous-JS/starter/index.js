@@ -1,25 +1,36 @@
 const fs = require("fs");
 const superagent = require("superagent");
 
-// NOTE Read file asyncronously in js
-fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
-  console.log(`Breed : ${data}`);
-
-  //NOTE Using superagent for request to resouce
-  superagent
-    // NOTE Method which returned a promises
-    .get(`https://dog.ceo/api/breed/${data}/images/random`)
-    // NOTE Handle successfuly case while request using promise
-    .then(res => {
-      console.log(res.body.message);
-
-      // NOTE write result path image to file
-      fs.writeFile("dog-img.txt", res.body.message, err => {
-        console.log("Random dog image saved to file!");
-      });
-    })
-    // NOTE Catch for handle rejected or unsuccessfuly image
-    .catch(err => {
-      console.log(err.message);
+const readFilePro = file => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (err, data) => {
+      if (err) reject("I could not find that file!");
+      resolve(data);
     });
-});
+  });
+};
+
+const writeFilePro = (file, data) => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(file, data, error => {
+      if (error) reject("Could not write the fails!");
+      resolve("success");
+    });
+  });
+};
+
+readFilePro(`${__dirname}/dog.txt`)
+  .then(data => {
+    console.log(`Breed: ${data}`);
+    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+  })
+  .then(res => {
+    console.log(res.body.message);
+    return writeFilePro("dog-img.txt", res.body.message);
+  })
+  .then(() => {
+    console.log("Random dog image saved to file");
+  })
+  .catch(err => {
+    console.log(err);
+  });
