@@ -35,10 +35,24 @@ const getDogPict = async () => {
     console.log("Random dog image save to file!");
   } catch (error) {
     console.log(error);
+
+    throw error;
   }
+
+  return "2: READY";
 };
 
-getDogPict();
+console.log("1: Will get dog pics!");
+// const a = getDogPict();
+// console.log(a);
+getDogPict()
+  .then(x => {
+    console.log(x);
+    console.log("3: Done getting dog pics!");
+  })
+  .catch(error => {
+    console.log(error);
+  });
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then(data => {
