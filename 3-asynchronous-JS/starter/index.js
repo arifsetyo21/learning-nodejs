@@ -42,17 +42,29 @@ const getDogPict = async () => {
   return "2: READY";
 };
 
-console.log("1: Will get dog pics!");
-// const a = getDogPict();
-// console.log(a);
-getDogPict()
-  .then(x => {
+/* NOTE #2 way for executing async function : executing for execute with no require declare new variable */
+(async () => {
+  try {
+    console.log("1: will get dog pics!");
+    const x = await getDogPict();
     console.log(x);
     console.log("3: Done getting dog pics!");
-  })
-  .catch(error => {
+  } catch (error) {
     console.log(error);
-  });
+  }
+})();
+
+// console.log("1: Will get dog pics!");
+// // const a = getDogPict();
+// // console.log(a);
+// getDogPict()
+//   .then(x => {
+//     console.log(x);
+//     console.log("3: Done getting dog pics!");
+//   })
+//   .catch(error => {
+//     console.log(error);
+//   });
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then(data => {
