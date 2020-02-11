@@ -93,6 +93,13 @@ app.use((req, res, next) => {
 // app.use('/api/v1/users', userRouter);
 app.use('/api/v1', indexRouter);
 
+app.all('*', (req, res, next) => {
+   return res.status(404).json({
+      status: 'fail',
+      message: `Can't find ${req.originalUrl} on this server!`
+   });
+});
+
 /* NOTE Refactoring route solution 3 with route mounting middleware/group routing if in laravel */
 
 /* NOTE Refactoring routes solution 2 */
